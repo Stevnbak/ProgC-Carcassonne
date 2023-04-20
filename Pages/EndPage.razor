@@ -40,8 +40,6 @@
                 if (Store.Board[x, y] == null) continue;
                 Tile tile = Store.Board[x, y];
 
-                Console.WriteLine($"Tile at ({x},{y})");
-
                 //Add points if chirch
                 if(tile.Type.special == 'c' && tile.SelectedArea.Value.Value == 'c')
                 {

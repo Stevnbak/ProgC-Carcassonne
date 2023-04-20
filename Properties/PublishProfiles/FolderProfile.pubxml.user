@@ -4,8 +4,8 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 -->
 <Project>
   <PropertyGroup>
-    <_PublishTargetUrl>D:\OneDrive - TEC\Programmering\Eksamen\publish</_PublishTargetUrl>
-    <History>True|2023-04-20T18:38:32.5487001Z;False|2023-04-20T20:35:36.1573171+02:00;True|2023-04-20T16:30:13.0635524+02:00;True|2023-04-20T16:29:15.0427572+02:00;</History>
+    <_PublishTargetUrl>D:\OneDrive - TEC\Programmering\Eksamen Publish</_PublishTargetUrl>
+    <History>True|2023-04-20T19:16:22.1935596Z;True|2023-04-20T21:15:09.1889054+02:00;False|2023-04-20T21:14:32.7696492+02:00;True|2023-04-20T20:38:32.5487001+02:00;False|2023-04-20T20:35:36.1573171+02:00;True|2023-04-20T16:30:13.0635524+02:00;True|2023-04-20T16:29:15.0427572+02:00;</History>
     <LastFailureDetails />
   </PropertyGroup>
 </Project>

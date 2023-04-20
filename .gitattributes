@@ -1,0 +1,2 @@
+# blazor dlls - treat all .dll files as binary
+*.dll binary

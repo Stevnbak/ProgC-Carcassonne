@@ -1,0 +1,70 @@
+﻿@page "/"
+@inject NavigationManager Navigation
+<PageTitle>Carcassonne</PageTitle>
+<h1>Carcassonne</h1>
+
+<p>Setting game up...</p>
+
+@code {
+
+    //On load
+    protected override async Task OnInitializedAsync()
+    {
+        //Create All TileTypes
+        Store.Deck = new List<Tile>();
+        Store.TileTypes = new List<TileType>();
+        //  Chirch
+        Store.TileTypes.Add(new TileType('g', 'g', 'g', 'g', 'c', 4, "tile01.png"));
+        Store.TileTypes.Add(new TileType('g', 'g', 'r', 'g', 'c', 2, "tile02.png"));
+        //  Normal
+        Store.TileTypes.Add(new TileType('g', 'r', 'g', 'r', 'n', 8, "tile03.png"));
+        Store.TileTypes.Add(new TileType('g', 'g', 'r', 'r', 'n', 9, "tile04.png"));
+        Store.TileTypes.Add(new TileType('g', 'r', 'r', 'r', 'n', 4, "tile05.png"));
+        Store.TileTypes.Add(new TileType('r', 'r', 'r', 'r', 'n', 1, "tile06.png"));
+        Store.TileTypes.Add(new TileType('t', 'g', 'g', 'g', 'n', 5, "tile07.png"));
+        Store.TileTypes.Add(new TileType('t', 'r', 'g', 'r', 'n', 4, "tile08.png"));
+        TileType startTile = new TileType('t', 'g', 'r', 'r', 'n', 3, "tile09.png");
+        Store.TileTypes.Add(startTile);
+        Store.TileTypes.Add(new TileType('t', 'r', 'r', 'g', 'n', 3, "tile10.png"));
+        Store.TileTypes.Add(new TileType('t', 'r', 'r', 'r', 'n', 3, "tile11.png"));
+        Store.TileTypes.Add(new TileType('g', 't', 'g', 't', 'n', 1, "tile12.png"));
+        Store.TileTypes.Add(new TileType('t', 't', 'g', 'g', 'n', 3, "tile13.png"));
+        Store.TileTypes.Add(new TileType('t', 'g', 't', 'g', 'n', 3, "tile14.png"));
+        Store.TileTypes.Add(new TileType('t', 't', 'g', 'g', 'n', 2, "tile15.png"));
+        Store.TileTypes.Add(new TileType('t', 't', 'r', 'r', 'n', 3, "tile16.png"));
+        Store.TileTypes.Add(new TileType('t', 't', 'g', 't', 'n', 3, "tile17.png"));
+        Store.TileTypes.Add(new TileType('t', 't', 'r', 't', 'n', 1, "tile18.png"));
+        // Shield
+        Store.TileTypes.Add(new TileType('g', 't', 'g', 't', 's', 2, "tile19.png"));
+        Store.TileTypes.Add(new TileType('t', 't', 'g', 'g', 's', 2, "tile20.png"));
+        Store.TileTypes.Add(new TileType('t', 't', 'r', 'r', 's', 2, "tile21.png"));
+        Store.TileTypes.Add(new TileType('t', 't', 'g', 't', 's', 1, "tile22.png"));
+        Store.TileTypes.Add(new TileType('t', 't', 'r', 't', 's', 2, "tile23.png"));
+        Store.TileTypes.Add(new TileType('t', 't', 't', 't', 's', 1, "tile24.png"));
+
+        //Shuffle deck
+        Random random = new Random();
+        Tile[] newDeck = new Tile[Store.Deck.Count + 1];
+        newDeck[0] = new Tile(startTile, 0);
+        Store.Deck.ForEach((type) =>
+            {
+                bool found = false;
+                while (!found)
+                {
+                    int r = random.Next(newDeck.Length);
+                    if (newDeck[r] == null)
+                    {
+                        newDeck[r] = type;
+                        found = true;
+                    }
+                }
+            });
+        Store.Deck = newDeck.ToList();
+
+        //Create board
+        Store.Board = new Tile[Store.GameSettings.BoardSize, Store.GameSettings.BoardSize];
+
+        //Go to start screen
+        Navigation.NavigateTo("/start");
+    }
+}

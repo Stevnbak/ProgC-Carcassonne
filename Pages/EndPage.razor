@@ -1,0 +1,119 @@
+﻿@page "/end"
+@inject NavigationManager Navigation
+<PageTitle>Carcassonne - End</PageTitle>
+<h1>Carcassonne - End</h1>
+
+<p>End Screen</p>
+
+<div class="leaderboard">
+    <h2>Final scores:</h2>
+    @foreach (KeyValuePair < Player, int> pair in points.OrderByDescending((a) => a.Value))
+    {
+        <p>@pair.Key.Name - @pair.Value</p>
+    }
+</div>
+
+@code {
+    Dictionary<Player, int> points = new Dictionary<Player, int>();
+
+    //On load
+    protected override async Task OnInitializedAsync()
+    {
+        if (Store.Deck == null || Store.Board == null || Store.TileTypes == null || Store.Players == null)
+        {
+            Navigation.NavigateTo("/");
+            return;
+        }
+
+        //Add players to point dictionary and list
+        Store.Players.ForEach((player) =>
+        {
+            points.Add(player, 0);
+        });
+
+        //Get all regions on board
+        List<List<KeyValuePair<Tile, int>>> regions = new List<List<KeyValuePair<Tile, int>>>();
+        for(int x = 0; x < Store.Board.GetLength(0); x++)
+        {
+            for(int y = 0; y < Store.Board.GetLength(1); y++)
+            {
+                if (Store.Board[x, y] == null) continue;
+                Tile tile = Store.Board[x, y];
+
+                Console.WriteLine($"Tile at ({x},{y})");
+
+                //Add points if chirch
+                if(tile.Type.special == 'c' && tile.SelectedArea.Value.Value == 'c')
+                {
+                    for(int i = -1; i <= 1; i++)
+                    {
+                        for(int j = -1; j <= 1; j++)
+                        {
+                            //Add points if tile exists
+                            if (Store.Board[x + i, y + j] != null) points[tile.Player] += 1;
+                        }
+                    }
+                }
+
+                //Find regions
+                List<KeyValuePair<Tile, int>>[] tileRegions = tile.GetRegions() ?? new List<KeyValuePair<Tile, int>>[0];
+
+                for(int i = 0; i < tileRegions.Length; i++)
+                {
+                    if (tileRegions[i] == null) continue;
+                    List<KeyValuePair<Tile, int>> region = tileRegions[i];
+                    //Already in all regions?
+                    List<List<KeyValuePair<Tile, int>>> sameLength = regions.Where((mainRegion) => region.Count == mainRegion.Count).ToList();
+
+                    bool exists = false;
+                    sameLength.ForEach((mainRegion) =>
+                    {
+                        mainRegion.ForEach((mainTile) =>
+                        {
+                            if (region.Contains(mainTile)) exists = true;
+                        });
+                    });
+
+                    //Add to all regions if not already
+                    if (exists) continue;
+                    regions.Add(region);
+                }
+            }
+        }
+
+        //Calculate points for each region
+        regions.ForEach((region) =>
+        {
+            char type = region[0].Key.Type.sides[region[0].Value];
+
+            Player? owner = Tile.GetPlayerOwningRegion(region);
+            if (owner == null) return;
+
+            //Filter out same tile appearing multiple times in region
+            List<Tile> filteredRegion = new List<Tile>();
+            region.ForEach((tile) =>
+            {
+                if (filteredRegion.Where((a) => a == tile.Key).ToList().Count == 0) filteredRegion.Add(tile.Key);
+            });
+
+            //Calculate points for region
+            int amount = filteredRegion.Count;
+            if(type == 't')
+            {
+                //Big towns count double
+                if(amount > 2) amount *= 2;
+                //Special shield towns
+                amount += filteredRegion.Where((a) => a.Type.special == 's').ToList().Count;
+            }
+
+            //Grass is weird...
+            if(type == 'g')
+            {
+                //For now just count 1 point per grass, like with roads
+            }
+
+            //Add points to owner
+            points[owner] += amount;
+        });
+    }
+}

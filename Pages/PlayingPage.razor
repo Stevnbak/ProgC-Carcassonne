@@ -1,0 +1,415 @@
+﻿@page "/play"
+@inject NavigationManager Navigation
+<PageTitle>Carcassonne - Playing</PageTitle>
+<h1>Carcassonne - Playing</h1>
+<p>Playing screen</p>
+
+@if (state != 0)
+{
+    <!--Controls-->
+    <div class="controls">
+        <!--Current Tile-->
+        @if (state == 1)
+        {
+            <div class="placeTile">
+                <p>Tile to place: </p>
+                <img src="images/tiles/@currentTile.Type.image" style="transform: rotate(@(currentTile.TopSide * (-90))deg);" alt="Current Tile" />
+                <button @onclick="rotateTile">Rotate</button>
+            </div>
+        }
+        <!--Select area-->
+        @if (state == 2)
+        {
+            <div class="areaSelection">
+                @if(currentPlayer.selectedAreas < Store.GameSettings.MaxAreasPerPlayer) {
+                    <p>Select area:</p>
+                    @for(int i = 0; i < possibleAreas.Length; i++)
+                    {
+                        char area = possibleAreas[i] ?? 'n';
+                        int index = i;
+                        @if(area == 'c')
+                        {
+                            <button @onclick="() => {selectArea(area, index);}">Chirch</button>
+                        } else
+                        {
+                            int sideAfterRotation = index - currentTile.TopSide;
+                            if (sideAfterRotation < 0) sideAfterRotation += 4;
+                            @if (area != 'n')
+                            {
+                                <button @onclick="() => {selectArea(area, index);}">@(possibleAreas.ToList().Where((a) => a == area).ToList().Count == 1 ? "" : sideAfterRotation == 0 ? "Top " : sideAfterRotation == 1 ? "Right " : sideAfterRotation == 2 ? "Bottom " : "Left ")  @(area == 't' ? "Town" : area == 'r' ? "Road" : area == 'g' ? "Grass" : "Error")</button>
+                            }
+                        }
+                    }
+                    <button @onclick="() => {selectArea('n', -1);}">None</button>
+                } else
+                {
+                    <p>You have no more areas left to select</p>
+                    <button @onclick="() => {selectArea('n', -1);}">Continue</button>
+                }
+            </div>
+        }
+        <!-- Temp end button -->
+        <button @onclick="endGame" class="endGame">End game</button>
+    </div>
+    <!--Player List-->
+    <div class="player-list">
+        <p style="filter: @(filterToColorPlayer(currentPlayer));">
+            Current player: "@(currentPlayer != null ? currentPlayer.Name : "null")"
+        </p>
+        @foreach (Player player in Store.Players)
+        {
+            <div style="@(currentPlayer == player ? "background-color: #a6a6a6;" : "")">
+                <p class="player @(player == currentPlayer ? "current" : "")" style="filter: @(filterToColorPlayer(player));">
+                    @player.Name
+                </p>
+            </div>
+        }
+    </div>
+    <!--Board-->
+    <div class="board">
+        <table>
+            @for (int r = 0; r < Store.GameSettings.BoardSize; r++)
+            {
+                <tr>
+                    @for (int c = 0; c < Store.GameSettings.BoardSize; c++)
+                    {
+                        <td>
+                            <div class="cell">
+                                @if (Store.Board[c, r] != null)
+                                {
+                                    Tile tile = @Store.Board[c, r];
+                                    <img 
+                                        class="tile" 
+                                        src="images/tiles/@tile.Type.image" 
+                                        style="transform: rotate(@(tile.TopSide * (-90))deg);" 
+                                        alt="Tile" 
+                                    />
+                                    <img 
+                                        class="tile-overlay"
+                                        src="images/overlays/@(tile.OverlayPath == null ? "none.png" : tile.OverlayPath)"
+                                        style="filter: @(filterToColorPlayer(tile.Player));"
+                                        alt="Tile overlay" 
+                                    />
+                                }
+                                else if (state == 1)
+                                {
+                                    var x = c;
+                                    var y = r;
+                                    <button @onclick="() => {placeTile(x, y);}"></button>
+                                }
+                            </div>
+                        </td>
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+} 
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+    uint state = 0; // 0: none, 1: Placing tile; 2: Selecting area;
+    Player? currentPlayer;
+    int nextTile = 0;
+    Tile? currentTile;
+
+    //On load
+    protected override async Task OnInitializedAsync()
+    {
+        if(Store.Deck == null || Store.Board == null || Store.TileTypes == null || Store.Players == null)
+        {
+            //Send to home if game is not set up yet
+            Navigation.NavigateTo("/");
+        } else
+        {
+            //Start playing
+            state = 1;
+            currentPlayer = Store.Players[0];
+            currentTile = getTile();
+            placeTile(7, 7, false);
+        }
+    }
+
+    Tile getTile()
+    {
+        if (nextTile >= Store.Deck.Count)
+        {
+            endGame();
+            return null;
+        }
+        Tile tile = Store.Deck[nextTile];
+        nextTile++;
+        return tile;
+    }
+
+    void rotateTile()
+    {
+        currentTile.TopSide--;
+        if (currentTile.TopSide < 0) currentTile.TopSide = 3;
+    }
+    void placeTile(int x, int y, bool check = true)
+    {
+        if (state != 1) return;
+        bool allowed = false;
+        if (check)
+        {
+            //For each side find tile spot next to it
+            for (int i = 0; i < 4; i++)
+            {
+                int newX = i == 0 ? x - 1 : i == 1 ? x + 1 : x;
+                int newY = i == 2 ? y - 1 : i == 3 ? y + 1 : y;
+                if (newX < 0 || newX >= Store.GameSettings.BoardSize) continue;
+                if (newY < 0 || newY >= Store.GameSettings.BoardSize) continue;
+                if (Store.Board[newX, newY] != null)
+                {
+                    //Check if side next to current side is the same
+                    Tile tile = Store.Board[newX, newY];
+                    int relevantSideOther = newX < x ? 1 : newX > x ? 3 : newY < y ? 2 : 0;
+                    int relevantSideOwn = newX < x ? 3 : newX > x ? 1 : newY < y ? 0 : 2;
+                    relevantSideOther += tile.TopSide;
+                    relevantSideOwn += currentTile.TopSide;
+                    if (relevantSideOther >= 4) relevantSideOther -= 4;
+                    if (relevantSideOwn >= 4) relevantSideOwn -= 4;
+
+                    if (tile.Type.sides[relevantSideOther] == currentTile.Type.sides[relevantSideOwn])
+                    {
+                        //Tile is allowed to be placed from this side
+                        allowed = true;
+                    }
+                    else
+                    {
+                        //Tile can't be placed in this spot
+                        allowed = false;
+                        break;
+                    }
+                }
+            }
+        }
+        if (!check || allowed)
+        {
+            //Place tile
+            Store.Board[x, y] = currentTile;
+            if (check)
+            {
+                currentTile.Player = currentPlayer;
+                currentPlayer.PlacedTiles.Add(currentTile);
+                //Switch to area selection
+                updateAreas();
+                state = 2;
+            }
+            else currentTile = getTile();
+        }
+    }
+
+    char?[] possibleAreas = new char?[5];
+    void updateAreas()
+    {
+        //Reset areas
+        possibleAreas = new char?[5];
+        //Normal areas
+        for(int s = 0; s < currentTile.Type.sides.Length; s++)
+        {
+            char side = currentTile.Type.sides[s];
+            //More than one side of type?
+            if (currentTile.IsConnected(side))
+            {
+                for (int i = 0; i < currentTile.Type.sides.Length; i++)
+                {
+                    char side2 = currentTile.Type.sides[i];
+                    if (side2 != side) continue;
+                    if (possibleAreas.Contains(side2) == false) possibleAreas[s] = side;
+                }
+            } else
+            {
+                possibleAreas[s] = side;
+            }
+        }
+        //Special areas
+        if(currentTile.Type.special == 'c')
+        {
+            possibleAreas[4] = 'c';
+        }
+
+        //Remove if already taken by another tile
+        List<KeyValuePair<Tile, int>>[]? regions = currentTile.GetRegions();
+        if (regions == null) return;
+        for(int i = 0; i < regions.Length; i++)
+        {
+            if(Tile.GetPlayerOwningRegion(regions[i]) != null)
+            {
+                possibleAreas[i] = null;
+            }
+        }
+    }
+    void selectArea(char place, int index)
+    {
+        currentPlayer.selectedAreas += 1;
+        if(currentPlayer.selectedAreas > Store.GameSettings.MaxAreasPerPlayer)
+        {
+            currentPlayer.selectedAreas = Store.GameSettings.MaxAreasPerPlayer;
+        } else
+        {
+            if (place != 'n') currentTile.SetArea(place, index);
+        }
+
+        currentTile = getTile();
+        nextPlayer();
+        state = 1;
+    }
+
+    void nextPlayer()
+    {
+        int index = Store.Players.IndexOf(currentPlayer);
+        index++;
+        if (index >= Store.Players.Count) index = 0;
+        currentPlayer = Store.Players[index];
+    }
+    string filterToColorPlayer(Player? player)
+    {
+        if (player == null) return "";
+        string basicFilter = "invert(47%) sepia(27%) saturate(4754%) brightness(97%) contrast(101%) ";
+        string hue = $"hue-rotate({Store.Players.IndexOf(player) * (360 / Store.GameSettings.PlayerCount)}deg)";
+
+        return basicFilter + hue;
+    }
+
+    void endGame()
+    {
+        //Navigate to end screen
+        Navigation.NavigateTo("/end");
+    }
+}
+
+<style>
+    .controls {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+        min-width: 50%;
+        height: 20rem;
+        border: 5px solid #000000;
+        margin-bottom: 3rem;
+    }
+
+        .controls div {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            width: 75%;
+        }
+
+            .controls div * {
+                margin: 0 0.5rem;
+            }
+
+        .controls button {
+            width: 10rem;
+            height: 2rem;
+            border-radius: 0.25rem;
+        }
+
+    .placeTile img {
+        aspect-ratio: 1 / 1;
+        width: 5rem;
+    }
+
+    .endGame {
+        background-color: #ff6666;
+    }
+
+        .endGame:hover {
+            background-color: #ff0000;
+        }
+
+
+    .board {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        aspect-ratio: 1 / 1;
+        height: 80%;
+    }
+
+        .board table {
+            border: 5px solid #000000;
+            border-spacing: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .board td {
+            border: 1px solid rgba(50, 50, 50, 0.25);
+            padding: 0;
+        }
+
+    .cell {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        padding: 0;
+        margin: 0;
+    }
+
+        .cell button {
+            width: 100%;
+            height: 100%;
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+
+    .tile {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+    }
+
+    .tile-overlay {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+    }
+
+    button.tile-overlay {
+        opacity: 0.1;
+    }
+
+    button {
+        background-color: white;
+    }
+
+        button:hover {
+            cursor: pointer;
+            background-color: lightgray;
+        }
+
+    .player-list {
+        position: fixed;
+        top: 50%;
+        left: 5%;
+        border: 5px solid #000000;
+        min-width: 15rem;
+        display: flex;
+        justify-content: center;
+        align-items: stretch;
+        flex-direction: column;
+        height: 20rem;
+    }
+
+        .player-list div {
+            height: 2rem;
+            width: 100%;
+            text-align: left;
+            border-top: 2px solid #000000;
+            border-bottom: 2px solid #000000;
+            flex: 1;
+            margin: 0;
+            font-size: 1.5rem;
+        }
+</style>

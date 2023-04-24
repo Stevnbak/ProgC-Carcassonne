@@ -1,4 +1,4 @@
-﻿self.assetsManifest = {
+self.assetsManifest = {
   "assets": [
     {
       "hash": "sha256-9hjFpEvc2hKkrXX6g9QL\/PLMHhAP4ctc\/9LNFUSRGhI=",

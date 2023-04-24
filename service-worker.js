@@ -18,7 +18,7 @@ async function onInstall(event) {
     const assetsRequests = self.assetsManifest.assets
         .filter(asset => offlineAssetsInclude.some(pattern => pattern.test(asset.url)))
         .filter(asset => !offlineAssetsExclude.some(pattern => pattern.test(asset.url)))
-        .map(asset => new Request(asset.url));
+        .map(asset => new Request(asset.url, {cache: 'no-cache', integrity: null}));
     await caches.open(cacheName).then(cache => cache.addAll(assetsRequests));
 }
 
@@ -46,4 +46,4 @@ async function onFetch(event) {
 
     return cachedResponse || fetch(event.request);
 }
-/* Manifest version: K/OFrUTS */
+/* Manifest version: 2xu2Qr7t */

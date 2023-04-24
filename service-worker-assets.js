@@ -6,7 +6,7 @@
     },
     {
       "hash": "sha256-GT2gK+GjOisRXJY+9yh6H8s6K\/KDIsaFMFIgWvAnttY=",
-      "url": "_framework\/dotnet.6.0.16.rg90f5srfp.js"
+      "url": "_framework\/dotnet.6.0.16.a2v6nlh46i.js"
     },
     {
       "hash": "sha256-u8KbOjPcD2\/Pcbb0HaYyOuxEMMBYBUoicERKuSq9KMU=",
@@ -15,10 +15,6 @@
     {
       "hash": "sha256-qD0yE2pPRrUZHsuAj5If3uIg1gptLud06+eBaGEftXk=",
       "url": "_framework\/dotnet.wasm"
-    },
-    {
-      "hash": "sha256-Zuq0dWAsBm6\/2lSOsz7+H9PvFaRn61KIXHMMwXDfvyE=",
-      "url": "_framework\/icudt.dat"
     },
     {
       "hash": "sha256-WPyI4hWDPnOw62Nr27FkzGjdbucZnQD+Ph+GOPhAedw=",
@@ -33,11 +29,15 @@
       "url": "_framework\/icudt_no_CJK.dat"
     },
     {
-      "hash": "sha256-2YHL85I3QqJMKg+ObtsjpQO0iOguNbF2Y3mn1d\/TsQ0=",
+      "hash": "sha256-Zuq0dWAsBm6\/2lSOsz7+H9PvFaRn61KIXHMMwXDfvyE=",
+      "url": "_framework\/icudt.dat"
+    },
+    {
+      "hash": "sha256-\/XVl\/r6MS5py+S9BrtkIxwNh2IQ4RGOjSznCE4kUVDQ=",
       "url": "_framework\/blazor.boot.json"
     },
     {
-      "hash": "sha256-y4dXZ0vg5uUhD6X2boLepwtsk6iDbmrzIS+XkTUlayI=",
+      "hash": "sha256-zt1Pe4C+TiuNGR0UoJ2\/lLI1FsB4kb9rXGesrUwMwvc=",
       "url": "_framework\/Eksamen.dll"
     },
     {
@@ -153,11 +153,11 @@
       "url": "_framework\/System.Text.Json.dll"
     },
     {
-      "hash": "sha256-aLX0VzcBADeHIseO3OlJZ4GmNQE1Ixt\/6SA3JtxR3Y4=",
+      "hash": "sha256-6cMJyp9qDtxPlwtGm7bSnFea0ZMlE4ZM4NEfq9+vRxk=",
       "url": "Eksamen.styles.css"
     },
     {
-      "hash": "sha256-RyCo3jNtaktbsHcw8F8c3NvV86qhiyi0y0VuhRxwtGk=",
+      "hash": "sha256-Ln9oS1LFKi5oiviFHpXP9AooN3gVgNNVa05a9Gw5wi0=",
       "url": "css\/app.css"
     },
     {
@@ -389,13 +389,13 @@
       "url": "images\/tiles\/tile24.png"
     },
     {
-      "hash": "sha256-yz1O5dYo4yikkjsFrmggcwUWPBtEUH4TI0tYyOt7HhY=",
+      "hash": "sha256-1nZbV3NV5VL2pBtVmiaRx\/NuhikcFZYGjCgVZZo9s3A=",
       "url": "index.html"
     },
     {
-      "hash": "sha256-pexp62JZw64dRWIhBFLjCiW7aLm5crnsJHUSAGInhso=",
+      "hash": "sha256-v+3bUVoyHXVrP+iXskmPdDPlldq6l5jSa79H4REdcwY=",
       "url": "manifest.json"
     }
   ],
-  "version": "K\/OFrUTS"
+  "version": "2xu2Qr7t"
 };

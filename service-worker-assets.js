@@ -161,7 +161,7 @@
       "url": "css\/app.css"
     },
     {
-      "hash": "sha256-Jtxf9L+5ITKRc1gIRl4VbUpGkRNfOBXjYTdhJD4facM=",
+      "hash": "sha256-DwjEJ7r6NAmGATrod6Iookbd21QjpASGT6EKuz5UwNM=",
       "url": "favicon.ico"
     },
     {
@@ -405,5 +405,5 @@
       "url": "manifest.json"
     }
   ],
-  "version": "0IbP3SVs"
+  "version": "iOjtwDte"
 };

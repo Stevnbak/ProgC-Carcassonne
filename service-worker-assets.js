@@ -1,4 +1,4 @@
-self.assetsManifest = {
+﻿self.assetsManifest = {
   "assets": [
     {
       "hash": "sha256-9hjFpEvc2hKkrXX6g9QL\/PLMHhAP4ctc\/9LNFUSRGhI=",
@@ -163,14 +163,6 @@ self.assetsManifest = {
     {
       "hash": "sha256-DwjEJ7r6NAmGATrod6Iookbd21QjpASGT6EKuz5UwNM=",
       "url": "favicon.ico"
-    },
-    {
-      "hash": "sha256-DbpQaq68ZSb5IoPosBErM1QWBfsbTxpJqhU0REi6wP4=",
-      "url": "icon-192.png"
-    },
-    {
-      "hash": "sha256-oEo6d+KqX5fjxTiZk\/w9NB3Mi0+ycS5yLwCKwr4IkbA=",
-      "url": "icon-512.png"
     },
     {
       "hash": "sha256-HLjSvRhEdMGExIOp4dg3xtFdTbf47PTE10KEGfe+H58=",
@@ -401,9 +393,9 @@ self.assetsManifest = {
       "url": "index.html"
     },
     {
-      "hash": "sha256-Z5Iw2vWsLva4vWb06nkEveXHC5y33bWs+oinZwY7kg8=",
+      "hash": "sha256-pexp62JZw64dRWIhBFLjCiW7aLm5crnsJHUSAGInhso=",
       "url": "manifest.json"
     }
   ],
-  "version": "iOjtwDte"
+  "version": "K\/OFrUTS"
 };

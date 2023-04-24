@@ -2,17 +2,30 @@
 @inject NavigationManager Navigation
 <PageTitle>Carcassonne - Playing</PageTitle>
 <h1>Carcassonne - Playing</h1>
-<p>Playing screen</p>
 
 @if (state != 0)
 {
     <!--Controls-->
     <div class="controls">
+        <!--Player List-->
+        <div class="player-list">
+            <h3 style="filter: @(filterToColorPlayer(currentPlayer));">
+                Current player: "@(currentPlayer != null ? currentPlayer.Name : "null")"
+            </h3>
+            @foreach (Player player in Store.Players)
+            {
+                <div style="@(currentPlayer == player ? "background-color: #a6a6a6;" : "")">
+                    <p class="player @(player == currentPlayer ? "current" : "")" style="filter: @(filterToColorPlayer(player));">
+                        @player.Name
+                    </p>
+                </div>
+            }
+        </div>
         <!--Current Tile-->
         @if (state == 1)
         {
             <div class="placeTile">
-                <p>Tile to place: </p>
+                <h2>Tile to place: </h2>
                 <img src="images/tiles/@currentTile.Type.image" style="transform: rotate(@(currentTile.TopSide * (-90))deg);" alt="Current Tile" />
                 <button @onclick="rotateTile">Rotate</button>
             </div>
@@ -22,7 +35,7 @@
         {
             <div class="areaSelection">
                 @if(currentPlayer.selectedAreas < Store.GameSettings.MaxAreasPerPlayer) {
-                    <p>Select area:</p>
+                    <h2>Select area:</h2>
                     @for(int i = 0; i < possibleAreas.Length; i++)
                     {
                         char area = possibleAreas[i] ?? 'n';
@@ -48,22 +61,10 @@
                 }
             </div>
         }
-        <!-- Temp end button -->
-        <button @onclick="endGame" class="endGame">End game</button>
-    </div>
-    <!--Player List-->
-    <div class="player-list">
-        <p style="filter: @(filterToColorPlayer(currentPlayer));">
-            Current player: "@(currentPlayer != null ? currentPlayer.Name : "null")"
-        </p>
-        @foreach (Player player in Store.Players)
-        {
-            <div style="@(currentPlayer == player ? "background-color: #a6a6a6;" : "")">
-                <p class="player @(player == currentPlayer ? "current" : "")" style="filter: @(filterToColorPlayer(player));">
-                    @player.Name
-                </p>
-            </div>
-        }
+        <!-- End button -->
+        <div class="endGame">
+            <button @onclick="endGame">End game</button>
+        </div>
     </div>
     <!--Board-->
     <div class="board">
@@ -129,7 +130,8 @@ else
             state = 1;
             currentPlayer = Store.Players[0];
             currentTile = getTile();
-            placeTile(7, 7, false);
+            int center = (int)Math.Round((double)Store.GameSettings.BoardSize / 2, 0) - 1;
+            placeTile(center, center, false);
         }
     }
 
@@ -284,46 +286,72 @@ else
 }
 
 <style>
+    h2, h3 {
+        margin: 0;
+    }
+
     .controls {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         justify-content: space-evenly;
         align-items: center;
-        min-width: 50%;
-        height: 20rem;
+        min-width: 70%;
+        height: 15rem;
         border: 5px solid #000000;
         margin-bottom: 3rem;
     }
 
-        .controls div {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 0.75rem;
-            width: 75%;
+    .controls div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0.25rem;
+        border: 2px solid #000000;
+        height: 100%;
+    }
+
+    .player-list, .endGame {
+        justify-content: center;
+        width: 20%;
+    }
+    .placeTile, .areaSelection {
+        justify-content: space-evenly;
+        width: 60%;
+    }
+
+    .player-list {
+        justify-content: center;
+        align-items: stretch;
+    }
+
+        .player-list div {
+            height: 1.5rem;
+            width: 100%;
+            text-align: left;
+            border-top: 1px solid #000000;
+            border-bottom: 1px solid #000000;
+            flex: 1;
+            margin: 0;
+            font-size: 1.5rem;
         }
 
-            .controls div * {
-                margin: 0 0.5rem;
-            }
-
-        .controls button {
-            width: 10rem;
-            height: 2rem;
-            border-radius: 0.25rem;
-        }
+    .controls button {
+        width: 10rem;
+        height: 2rem;
+        border-radius: 0.25rem;
+    }
 
     .placeTile img {
         aspect-ratio: 1 / 1;
         width: 5rem;
     }
 
-    .endGame {
+    .endGame button {
+        max-width: 100%;
         background-color: #ff6666;
     }
 
-        .endGame:hover {
+        .endGame button:hover {
             background-color: #ff0000;
         }
 
@@ -333,7 +361,7 @@ else
         justify-content: center;
         align-items: center;
         aspect-ratio: 1 / 1;
-        height: 80%;
+        height: 100%;
     }
 
         .board table {
@@ -387,29 +415,5 @@ else
         button:hover {
             cursor: pointer;
             background-color: lightgray;
-        }
-
-    .player-list {
-        position: fixed;
-        top: 50%;
-        left: 5%;
-        border: 5px solid #000000;
-        min-width: 15rem;
-        display: flex;
-        justify-content: center;
-        align-items: stretch;
-        flex-direction: column;
-        height: 20rem;
-    }
-
-        .player-list div {
-            height: 2rem;
-            width: 100%;
-            text-align: left;
-            border-top: 2px solid #000000;
-            border-bottom: 2px solid #000000;
-            flex: 1;
-            margin: 0;
-            font-size: 1.5rem;
         }
 </style>

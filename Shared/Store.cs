@@ -14,8 +14,6 @@ namespace Eksamen.Shared
             public static int BoardSize = 15;
             public static int PlayerCount = 3;
             public static int MaxAreasPerPlayer = 10; 
-        }
-
-        
+        }   
     }
 }
